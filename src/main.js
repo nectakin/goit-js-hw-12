@@ -10,7 +10,7 @@ import { createMarkup } from './js/render-functions.js';
 import { form, input, gallery, loadMoreBtn } from './js/refs.js';
 import { loaderShow } from './js/loader.js';
 import { addLoadMoreBtn, removeLoadMoreBtn } from './js/load-more-btn.js';
-import { scrollScreen } from './js/scroll-screen';
+import { scrollScreen } from './js/scroll-screen.js';
 
 let searchQuery = '';
 
@@ -63,10 +63,12 @@ async function onFormSubmit(event) {
 
       photosGallery.refresh();
 
-      totalPages = data.totalHits / data.hits.length;
+     totalPages = data.totalHits / data.hits.length;
+
 
       if (page < totalPages) {
-        addLoadMoreBtn();
+        // addLoadMoreBtn();
+        // loadMoreHandle();
       }
     }
   } catch (error) {
@@ -75,12 +77,17 @@ async function onFormSubmit(event) {
     form.reset();
   }
   loaderShow();
+
 }
+
+loadMoreHandle();
+
 
 async function loadMoreHandle() {
   page += 1;
   removeLoadMoreBtn();
   loaderShow();
+  
   try {
     const data = await getData(searchQuery, page);
     gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
@@ -90,22 +97,24 @@ async function loadMoreHandle() {
     const galleryItem = document.querySelector('.gallery-item');
     scrollScreen(galleryItem);
 
-    if (page >= totalPages && data.totalHits) {
-      loaderShow();
+    if (page >= totalPages || (data.totalHits < 15 && data.totalHits)) {
+      //loaderShow();
       removeLoadMoreBtn();
       iziToast.info({
         title: '',
-        message: "You've reached the end of search results!",
-        position: 'bottomRight',
+        message: "We're sorry, but you've reached the end of search results!",
+        position: 'topRight',
         timeout: 3000,
         pauseOnHover: false,
       });
     }
     loaderShow();
     addLoadMoreBtn();
+
   } catch (error) {
     alert(error.message);
     removeLoadMoreBtn();
+
   } finally {
     if (page >= totalPages) {
       removeLoadMoreBtn();
