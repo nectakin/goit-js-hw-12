@@ -31,8 +31,8 @@ window.addEventListener('scroll', function() {
   if (scrollTop + clientHeight >= scrollHeight - 5) {
     const currentTime = new Date().getTime();
 
-    if (loadMoreBtn.classList.contains('hidden') && currentTime - lastToastTime > 5000) {
-      lastToastTime = currentTime;  // Оновлюємо час останнього повідомлення
+    if (loadMoreBtn.classList.contains('hidden') && currentTime - lastToastTime > 15000) {
+      lastToastTime = currentTime;  
       iziToast.info({
         title: '',
         message: "We're sorry, but you've reached the end of search results!",
