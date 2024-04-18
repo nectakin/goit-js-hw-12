@@ -27,7 +27,7 @@ loadMoreBtn.addEventListener('click', loadMoreHandle);
 window.addEventListener('scroll', function() {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-  if (scrollTop + clientHeight >= scrollHeight - 5) {
+  if (scrollTop + clientHeight >= scrollHeight - 5 && page >= totalPages) {
     if (loadMoreBtn.classList.contains('hidden')) {
       iziToast.info({
         title: '',
@@ -39,6 +39,7 @@ window.addEventListener('scroll', function() {
     }
   }
 });
+
 
 async function onFormSubmit(event) {
   event.preventDefault();
