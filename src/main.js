@@ -12,6 +12,7 @@ import { addLoadMoreBtn, removeLoadMoreBtn } from './js/load-more-btn.js';
 import { scrollScreen } from './js/scroll-screen';
 
 let searchQuery = '';
+let lastToastTime = 0;  
 
 const photosGallery = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
@@ -24,17 +25,14 @@ let totalPages;
 form.addEventListener('submit', onFormSubmit);
 loadMoreBtn.addEventListener('click', loadMoreHandle);
 
-let endOfResultsNotified = false;
-
 window.addEventListener('scroll', function() {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-  if (
-    scrollTop + clientHeight >= scrollHeight - 5 &&
-    page >= totalPages &&
-    !endOfResultsNotified
-  ) {
-    if (loadMoreBtn.classList.contains('hidden')) {
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    const currentTime = new Date().getTime();
+
+    if (loadMoreBtn.classList.contains('hidden') && currentTime - lastToastTime > 5000) {
+      lastToastTime = currentTime;  // Оновлюємо час останнього повідомлення
       iziToast.info({
         title: '',
         message: "We're sorry, but you've reached the end of search results!",
@@ -42,12 +40,9 @@ window.addEventListener('scroll', function() {
         timeout: 3000,
         pauseOnHover: false,
       });
-      endOfResultsNotified = true;
     }
   }
 });
-
-
 
 async function onFormSubmit(event) {
   event.preventDefault();
@@ -76,17 +71,14 @@ async function onFormSubmit(event) {
     if (data.hits.length === 0) {
       iziToast.error({
         title: '',
-        message:
-          'Sorry, there are no images matching your search query. Please try again!',
+        message: 'Sorry, there are no images matching your search query. Please try again!',
         position: 'topRight',
         timeout: 3000,
         pauseOnHover: false,
       });
     } else {
       gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
-
       photosGallery.refresh();
-
       totalPages = Math.ceil(data.totalHits / data.hits.length);
 
       if (page < totalPages) {

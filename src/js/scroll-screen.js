@@ -7,4 +7,14 @@ function scrollScreen(item) {
   });
 }
 
-export { scrollScreen };
+export { scrollScreen }; 
+
+/*function scrollScreen() {
+  window.scrollBy({
+    top: window.innerHeight / 2, 
+    behavior: 'smooth',
+  });
+}
+
+export { scrollScreen }; */
+
