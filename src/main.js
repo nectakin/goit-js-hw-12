@@ -24,10 +24,16 @@ let totalPages;
 form.addEventListener('submit', onFormSubmit);
 loadMoreBtn.addEventListener('click', loadMoreHandle);
 
+let endOfResultsNotified = false;
+
 window.addEventListener('scroll', function() {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
 
-  if (scrollTop + clientHeight >= scrollHeight - 5 && page >= totalPages) {
+  if (
+    scrollTop + clientHeight >= scrollHeight - 5 &&
+    page >= totalPages &&
+    !endOfResultsNotified
+  ) {
     if (loadMoreBtn.classList.contains('hidden')) {
       iziToast.info({
         title: '',
@@ -36,9 +42,11 @@ window.addEventListener('scroll', function() {
         timeout: 3000,
         pauseOnHover: false,
       });
+      endOfResultsNotified = true;
     }
   }
 });
+
 
 
 async function onFormSubmit(event) {
