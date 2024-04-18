@@ -24,6 +24,22 @@ let totalPages;
 form.addEventListener('submit', onFormSubmit);
 loadMoreBtn.addEventListener('click', loadMoreHandle);
 
+window.addEventListener('scroll', function() {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+  if (scrollTop + clientHeight >= scrollHeight - 5) {
+    if (loadMoreBtn.classList.contains('hidden')) {
+      iziToast.info({
+        title: '',
+        message: "We're sorry, but you've reached the end of search results!",
+        position: 'bottomRight',
+        timeout: 3000,
+        pauseOnHover: false,
+      });
+    }
+  }
+});
+
 async function onFormSubmit(event) {
   event.preventDefault();
   gallery.innerHTML = '';
@@ -62,7 +78,7 @@ async function onFormSubmit(event) {
 
       photosGallery.refresh();
 
-      totalPages = data.totalHits / data.hits.length;
+      totalPages = Math.ceil(data.totalHits / data.hits.length);
 
       if (page < totalPages) {
         addLoadMoreBtn();
@@ -78,20 +94,17 @@ async function onFormSubmit(event) {
 
 async function loadMoreHandle() {
   page += 1;
-  removeLoadMoreBtn();
   loaderShow();
   try {
     const data = await getData(searchQuery, page);
-    gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
+    console.log('Loaded page:', page);
+    console.log('Total pages:', totalPages);
 
+    gallery.insertAdjacentHTML('beforeend', createMarkup(data.hits));
     photosGallery.refresh();
 
-    const galleryItem = document.querySelector('.gallery-item');
-    scrollScreen(galleryItem);
-
-    if (page >= totalPages && data.totalHits) {
-      loaderShow();
-      removeLoadMoreBtn();
+    if (page >= totalPages) {
+      console.log('Last page reached');
       iziToast.info({
         title: '',
         message: "We're sorry, but you've reached the end of search results!",
@@ -99,16 +112,17 @@ async function loadMoreHandle() {
         timeout: 3000,
         pauseOnHover: false,
       });
+      loaderShow();
+      removeLoadMoreBtn();
+    } else {
+      const galleryItem = document.querySelector('.gallery-item');
+      scrollScreen(galleryItem);
+      addLoadMoreBtn();
     }
-    loaderShow();
-    addLoadMoreBtn();
   } catch (error) {
     alert(error.message);
     removeLoadMoreBtn();
   } finally {
-    if (page >= totalPages) {
-      removeLoadMoreBtn();
-      loaderShow();
-    }
+    loaderShow();
   }
 }
