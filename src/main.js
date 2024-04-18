@@ -31,7 +31,7 @@ window.addEventListener('scroll', function() {
   if (scrollTop + clientHeight >= scrollHeight - 5) {
     const currentTime = new Date().getTime();
 
-    if (loadMoreBtn.classList.contains('hidden') && currentTime - lastToastTime > 15000) {
+    if (loadMoreBtn.classList.contains('hidden') && currentTime - lastToastTime > 7000) {
       lastToastTime = currentTime;  
       iziToast.info({
         title: '',
